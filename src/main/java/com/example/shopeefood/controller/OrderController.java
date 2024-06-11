@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,6 +92,7 @@ public class OrderController {
         if (!optionalStatus.isPresent()) {
             return ResponseEntity.badRequest().build();
         }
+        
 
         Order order = optionalOrder.get();
         Status status = optionalStatus.get();
@@ -124,7 +127,7 @@ public class OrderController {
         Optional<User> userOptional = iUserService.findById(idUser);
         Optional<Shop> shopOptional = iShopService.findById(idShop);
 
-        Optional<Address> addressOptional = iAddressRepository.findById(idAddress);
+//        Optional<Address> addressOptional = iAddressRepository.findById(idAddress);
 
 
         Address addressOptional = iAddressRepository.findById(idAddress).get();
@@ -147,6 +150,9 @@ public class OrderController {
         order.setStatus(statusOptional.get());
         order.setUser(user);
         order.setAddressOrder(address);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd-HHmmssSSS");
+        order.setCodeOrders(now.format(formatter));
         for (OrderItem item : orderItems) {
             if (item.getOrder() == null) {
                 item.setNote(note);
@@ -162,6 +168,23 @@ public class OrderController {
         }
 
         return new ResponseEntity<>(savedOrder, HttpStatus.CREATED);
+
     }
+
+    @GetMapping("/search/{dateStart}/{dateEnd}")
+    public ResponseEntity<List<Order>> searchByCreatedAt(@PathVariable long dateStart, @PathVariable long dateEnd) {
+        List<Order> lists = new ArrayList<>();
+        List<Order> orderList = iOrderRepository.findAll();
+        for (Order order : orderList) {
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+            String formattedDate = order.getCreatedAt().format(outputFormatter);
+            long dateAsLong = Long.parseLong(formattedDate);
+            if ((dateAsLong >= dateStart) && (dateAsLong <= dateEnd)) {
+                lists.add(order);
+            }
+        }
+        return new ResponseEntity<>(lists, HttpStatus.OK);
+    }
+
 
 }

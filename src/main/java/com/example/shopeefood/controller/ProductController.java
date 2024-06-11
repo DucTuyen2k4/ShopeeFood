@@ -137,4 +137,13 @@ public class ProductController {
 
         }
     }
+    @GetMapping("/detailProduct/{idProduct}")
+    public ResponseEntity<Product> detailProduct(@PathVariable Long idProduct) {
+        Optional<Product> product = productRepository.findById(idProduct);
+        if (product.isPresent()) {
+            return new ResponseEntity<>(product.get(), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

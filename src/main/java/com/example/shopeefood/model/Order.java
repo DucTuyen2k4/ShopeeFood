@@ -19,6 +19,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private String codeOrders;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
