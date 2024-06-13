@@ -31,7 +31,7 @@ public class ShopController {
     @Autowired
     private IShopRepository shopRepository;
 
-    @Value("${file.upload-dir}")
+    @Value("/home/nguyenhuugiang19072004/IdeaProjects/ShopeeFood-Nh-m-3-/src/main/resources/static/img/")
     private String fileUpload;
     public MultipartFile multipartFile;
     @ExceptionHandler({Exception.class})
@@ -40,6 +40,10 @@ public class ShopController {
         return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @GetMapping("/findShopByName")
+    public ResponseEntity<List<Shop>> findShop(@RequestParam String name) {
+        return ResponseEntity.ok(shopRepository.findAllByNameContaining(name));
+    }
     @GetMapping("/findShopByName")
     public ResponseEntity<List<Shop>> findShop(@RequestParam String name) {
         return ResponseEntity.ok(shopRepository.findAllByNameContaining(name));

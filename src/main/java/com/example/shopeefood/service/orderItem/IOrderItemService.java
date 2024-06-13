@@ -12,7 +12,3 @@ public interface IOrderItemService extends IGenerateService<OrderItem> {
 
     List<OrderItem> findByOrderId(long idOrder);
 }
-
-
-
-

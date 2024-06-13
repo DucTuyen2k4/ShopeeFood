@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,7 +136,7 @@ public class OrderController {
         Optional<User> userOptional = iUserService.findById(idUser);
         Optional<Shop> shopOptional = iShopService.findById(idShop);
 
-        Optional<Address> addressOptional = iAddressRepository.findById(idAddress);
+//        Optional<Address> addressOptional = iAddressRepository.findById(idAddress);
 
 
         Address a = iAddressRepository.findById(idAddress).get();
@@ -157,6 +159,15 @@ public class OrderController {
         order.setStatus(statusOptional.get());
         order.setUser(user);
         order.setAddressOrder(address);
+        for (OrderItem item : orderItems) {
+            if (item.getOrder() == null) {
+                item.setNote(note);
+                order.addOrderItem(item);
+            }
+        }
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd-HHmmssSSS");
+        order.setCodeOrders(now.format(formatter));
         for (OrderItem item : orderItems) {
             if (item.getOrder() == null) {
                 item.setNote(note);

@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface IShopRepository extends JpaRepository<Shop, Long> {
     List<Shop> findAllByNameContaining(String name);
-
 }
 
 

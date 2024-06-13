@@ -33,7 +33,7 @@ import java.util.Set;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    @Value("${file.upload-dir}")
+    @Value("/home/nguyenhuugiang19072004/IdeaProjects/ShopeeFood-Nh-m-3-/src/main/resources/static/img/")
     private String fileUpload;
 
 
