@@ -30,4 +30,5 @@ public class CityController {
         return new ResponseEntity<>(cityList, HttpStatus.OK);
 
     }
+
 }

@@ -3,7 +3,10 @@ package com.example.shopeefood.repository;
 import com.example.shopeefood.model.Shop;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IShopRepository extends JpaRepository<Shop, Long> {
+import java.util.List;
 
+
+public interface IShopRepository extends JpaRepository<Shop, Long> {
+    List<Shop> findAllByNameContaining(String name);
 }
 

@@ -34,4 +34,6 @@ public interface IProductRepository extends JpaRepository<Product,Long> {
     void deleteByUserIdAndProductId(@Param("userId") Long userId, @Param("productId") Long productId);
 
     Page<Product> findAllByNameContaining(Pageable pageable, String name);
+    List<Product> findByMenusId(long menuId);
+
 }

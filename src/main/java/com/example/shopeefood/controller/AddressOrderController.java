@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/addressOrder")
+@RequestMapping("/api/addressOrder")
 
 public class AddressOrderController {
     @Autowired

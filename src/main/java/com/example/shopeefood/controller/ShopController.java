@@ -1,6 +1,7 @@
 package com.example.shopeefood.controller;
 
 import com.example.shopeefood.model.*;
+import com.example.shopeefood.repository.IShopRepository;
 import com.example.shopeefood.service.category.ICategoryService;
 import com.example.shopeefood.service.city.ICityService;
 import com.example.shopeefood.service.shop.IShopService;
@@ -27,11 +28,20 @@ import java.util.Optional;
 public class ShopController {
     @Autowired
     private IShopService iShopService;
+    @Autowired
+    private IShopRepository shopRepository;
+
+    @Value("/home/nguyenhuugiang19072004/IdeaProjects/ShopeeFood-Nh-m-3-/src/main/resources/static/img/")
+
     private String fileUpload;
     public MultipartFile multipartFile;
     @ExceptionHandler({Exception.class})
     public ResponseEntity<String> handleException(Exception e){
         return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @GetMapping("/findShopByName")
+    public ResponseEntity<List<Shop>> findShop(@RequestParam String name) {
+        return ResponseEntity.ok(shopRepository.findAllByNameContaining(name));
     }
     @GetMapping
     public ResponseEntity<List<Shop>> getAllShops(){
@@ -65,8 +75,9 @@ public class ShopController {
         Shop shop = new Shop(
                 shopFile.getId(),
                 shopFile.getName(),
-                shopFile.getAddress(),
                 shopFile.getPhoneNumber(),
+                shopFile.getAddress(),
+
                 shopFile.getEmail(),
                 fileName,
                 shopFile.getTimeStart(),

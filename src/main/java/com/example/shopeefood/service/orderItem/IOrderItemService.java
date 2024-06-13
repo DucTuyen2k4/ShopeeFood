@@ -3,7 +3,6 @@ package com.example.shopeefood.service.orderItem;
 import com.example.shopeefood.model.*;
 import com.example.shopeefood.service.IGenerateService;
 
-import java.util.Date;
 import java.util.List;
 
 public interface IOrderItemService extends IGenerateService<OrderItem> {

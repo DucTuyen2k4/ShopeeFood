@@ -92,7 +92,6 @@ public class OrderController {
         if (!optionalStatus.isPresent()) {
             return ResponseEntity.badRequest().build();
         }
-        
 
         Order order = optionalOrder.get();
         Status status = optionalStatus.get();
@@ -150,6 +149,12 @@ public class OrderController {
         order.setStatus(statusOptional.get());
         order.setUser(user);
         order.setAddressOrder(address);
+        for (OrderItem item : orderItems) {
+            if (item.getOrder() == null) {
+                item.setNote(note);
+                order.addOrderItem(item);
+            }
+        }
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd-HHmmssSSS");
         order.setCodeOrders(now.format(formatter));
@@ -168,23 +173,6 @@ public class OrderController {
         }
 
         return new ResponseEntity<>(savedOrder, HttpStatus.CREATED);
-
     }
-
-    @GetMapping("/search/{dateStart}/{dateEnd}")
-    public ResponseEntity<List<Order>> searchByCreatedAt(@PathVariable long dateStart, @PathVariable long dateEnd) {
-        List<Order> lists = new ArrayList<>();
-        List<Order> orderList = iOrderRepository.findAll();
-        for (Order order : orderList) {
-            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
-            String formattedDate = order.getCreatedAt().format(outputFormatter);
-            long dateAsLong = Long.parseLong(formattedDate);
-            if ((dateAsLong >= dateStart) && (dateAsLong <= dateEnd)) {
-                lists.add(order);
-            }
-        }
-        return new ResponseEntity<>(lists, HttpStatus.OK);
-    }
-
 
 }
