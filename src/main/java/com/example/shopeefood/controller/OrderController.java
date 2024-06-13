@@ -115,7 +115,17 @@ public class OrderController {
 
     @GetMapping("/status/{statusId}")
     public ResponseEntity<List<Order>> getOrdersByStatusId(@PathVariable long statusId) {
-        return new ResponseEntity<>(iOrderRepository.findByStatusId(statusId),HttpStatus.OK);
+        if(statusId==1L){
+            List<Order> orderList =iOrderRepository.findAll();
+            Collections.reverse(orderList);
+            return new ResponseEntity<>(orderList,HttpStatus.OK);
+        }
+        else {
+            List<Order> orderList =iOrderRepository.findByStatusId(statusId);
+            Collections.reverse(orderList);
+            return new ResponseEntity<>(orderList,HttpStatus.OK);
+        }
+
     }
 
 
@@ -129,11 +139,11 @@ public class OrderController {
 //        Optional<Address> addressOptional = iAddressRepository.findById(idAddress);
 
 
-        Address addressOptional = iAddressRepository.findById(idAddress).get();
+        Address a = iAddressRepository.findById(idAddress).get();
 
         User user = userOptional.get();
         Shop shop = shopOptional.get();
-        AddressOrder address = new AddressOrder(addressOptional.getPhoneNumber(), addressOptional.getAddress(),addressOptional.getNameUser());
+        AddressOrder address = new AddressOrder(a.getPhoneNumber(), a.getAddress(),a.getNameUser());
         addressOrderRepository.save(address);
         List<OrderItem> orderItems = (List<OrderItem>) iOrderItemService.findAllByShopAndCart(shop, user);
         if (orderItems.isEmpty()) {

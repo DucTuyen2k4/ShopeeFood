@@ -10,3 +10,4 @@ public interface IShopRepository extends JpaRepository<Shop, Long> {
     List<Shop> findAllByNameContaining(String name);
 }
 
+

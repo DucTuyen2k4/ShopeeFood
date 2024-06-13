@@ -32,12 +32,17 @@ public class ShopController {
     private IShopRepository shopRepository;
 
     @Value("/home/nguyenhuugiang19072004/IdeaProjects/ShopeeFood-Nh-m-3-/src/main/resources/static/img/")
-
     private String fileUpload;
     public MultipartFile multipartFile;
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<String> handleException(Exception e){
-        return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> handleException(Exception e) {
+        e.printStackTrace();
+        return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping("/findShopByName")
+    public ResponseEntity<List<Shop>> findShop(@RequestParam String name) {
+        return ResponseEntity.ok(shopRepository.findAllByNameContaining(name));
     }
     @GetMapping("/findShopByName")
     public ResponseEntity<List<Shop>> findShop(@RequestParam String name) {
@@ -91,56 +96,46 @@ public class ShopController {
         return new ResponseEntity<>(iShopService.save(shop), HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Shop> updateShop(@PathVariable Long id, @ModelAttribute ShopFile shopFile)  throws IOException {
-        multipartFile = shopFile.getImage();
-       Shop shop = iShopService.findById(id).get();
+    public ResponseEntity<Shop> updateShop(@PathVariable Long id, @ModelAttribute ShopFile shopFile) throws IOException {
+        Optional<Shop> optionalShop = iShopService.findById(id);
+        if (!optionalShop.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-        String fileName = multipartFile.getOriginalFilename();
-        Shop originalMovie = iShopService.findById(shopFile.getId()).get();
+        Shop originalShop = optionalShop.get();
         LocalDateTime localDateTime = LocalDateTime.now();
-        if (multipartFile.isEmpty()) {
-             shop = new Shop(
-                    shopFile.getId(),
-                    shopFile.getName(),
-                    shopFile.getAddress(),
-                    shopFile.getPhoneNumber(),
-                    shopFile.getEmail(),
-                    originalMovie.getImage(),
-                    shopFile.getTimeStart(),
-                    shopFile.getTimeEnd(),
-                    shopFile.getIdCity(),
-                    shopFile.getIdCategory(),
-                    shop.getIdUser(),
-                    shop.getCreatedAt(),
-                    localDateTime
-            );
-
-            return new ResponseEntity<>(iShopService.save(shop), HttpStatus.CREATED);
-        } else {
-            // Có tệp ảnh mới được chọn, sao chép và cập nhật thông tin của shop
+        MultipartFile multipartFile = shopFile.getImage();
+        String fileName = multipartFile.getOriginalFilename();
+        if (!multipartFile.isEmpty()) {
             try {
                 FileCopyUtils.copy(shopFile.getImage().getBytes(), new File(fileUpload + fileName));
             } catch (IOException ex) {
                 ex.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-             shop = new Shop(
-                    shopFile.getId(),
-                    shopFile.getName(),
-                    shopFile.getAddress(),
-                    shopFile.getPhoneNumber(),
-                    shopFile.getEmail(),
-                     fileName,
-                    shopFile.getTimeStart(),
-                    shopFile.getTimeEnd(),
-                    shopFile.getIdCity(),
-                    shopFile.getIdCategory(),
-                    shopFile.getIdUser(),
-                    shop.getCreatedAt(),
-                    localDateTime
-            );
-            return new ResponseEntity<>(iShopService.save(shop), HttpStatus.CREATED);
+        } else {
+            fileName = originalShop.getImage();  // Giữ nguyên tên tệp nếu không có tệp mới
         }
+
+        Shop updatedShop = new Shop(
+                shopFile.getId(),
+                shopFile.getName(),
+                shopFile.getAddress(),
+                shopFile.getPhoneNumber(),
+                shopFile.getEmail(),
+                fileName,
+                shopFile.getTimeStart(),
+                shopFile.getTimeEnd(),
+                shopFile.getIdCity(),
+                shopFile.getIdCategory(),
+                originalShop.getIdUser(),
+                originalShop.getCreatedAt(),
+                localDateTime
+        );
+
+        return new ResponseEntity<>(iShopService.save(updatedShop), HttpStatus.OK);
     }
+
 
 }
 

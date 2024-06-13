@@ -34,9 +34,9 @@ import java.util.Set;
 public class ProductController {
 
     @Value("/home/nguyenhuugiang19072004/IdeaProjects/ShopeeFood-Nh-m-3-/src/main/resources/static/img/")
-
-
     private String fileUpload;
+
+
     @Autowired
     private IProductService iProductService;
     @Autowired
@@ -103,11 +103,17 @@ public class ProductController {
     @DeleteMapping("/delete-like")
     public ResponseEntity<?> deleteLike(@RequestParam Long userId, @RequestParam Long productId) {
         productRepository.deleteByUserIdAndProductId(userId, productId);
-        Optional<Product> product= productRepository.findById(productId);
-        product.get().setLike_product(product.get().getLike_product()-1);
-        productRepository.save(product.get());
-        return new ResponseEntity<>(HttpStatus.OK);
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            product.setLike_product(product.getLike_product() - 1);
+            productRepository.save(product);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
+
 
     @PostMapping()
     public ResponseEntity<Product> saveProduct(@ModelAttribute ProductFile productFile) {
@@ -135,10 +141,10 @@ public class ProductController {
             return new ResponseEntity<>(product, HttpStatus.CREATED);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.CREATED) ;
-
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/detailProduct/{idProduct}")
     public ResponseEntity<Product> detailProduct(@PathVariable Long idProduct) {
         Optional<Product> product = productRepository.findById(idProduct);
