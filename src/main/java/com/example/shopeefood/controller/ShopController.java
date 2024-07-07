@@ -30,6 +30,8 @@ public class ShopController {
     private IShopService iShopService;
     @Autowired
     private IShopRepository shopRepository;
+    @Autowired
+    private ICategoryService iCategoryService;
 
     @Value("/home/nguyenhuugiang19072004/IdeaProjects/ShopeeFood-Nh-m-3-/src/main/resources/static/img/")
     private String fileUpload;
@@ -40,10 +42,6 @@ public class ShopController {
         return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/findShopByName")
-    public ResponseEntity<List<Shop>> findShop(@RequestParam String name) {
-        return ResponseEntity.ok(shopRepository.findAllByNameContaining(name));
-    }
     @GetMapping("/findShopByName")
     public ResponseEntity<List<Shop>> findShop(@RequestParam String name) {
         return ResponseEntity.ok(shopRepository.findAllByNameContaining(name));
@@ -135,8 +133,16 @@ public class ShopController {
 
         return new ResponseEntity<>(iShopService.save(updatedShop), HttpStatus.OK);
     }
-
-
+    @GetMapping("/findByIdCategory/{id}")
+    public ResponseEntity<List<Shop>> findShopByIdCategory(@PathVariable Long id){
+        Optional<Category> optionalCategory = iCategoryService.findById(id);
+        List<Shop> shopList = shopRepository.findShopByIdCategory(optionalCategory.get());
+        if (shopList.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else {
+            return new ResponseEntity<>(shopList, HttpStatus.OK);
+        }
+    }
 }
 
 

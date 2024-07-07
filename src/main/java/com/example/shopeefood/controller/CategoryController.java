@@ -42,10 +42,9 @@ private ICategoryRepository iCategoryRepository;
     public ResponseEntity<List<Category>> getCategoryByIdCity(@PathVariable Long idCity){
         List<Category> shopList = iCategoryRepository.findByIdCity(idCity);
         if (shopList.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(shopList, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(shopList, HttpStatus.OK);
         }
     }
-
 }
