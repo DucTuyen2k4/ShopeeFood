@@ -45,7 +45,7 @@ public class ProductController {
     IProductRepository productRepository;
     @Autowired
     IUserRepository iUserRepository;
-    @GetMapping("/FindByPByName/{id}")
+    @GetMapping("/FindByName/{id}")
     public ResponseEntity<List<Product>> findByPName(@PathVariable Long id,@RequestParam("productName") String productName) {
         List<Product>list=productRepository.findFoodByMenuIdAndName(id, productName);
         return new ResponseEntity<>(list, HttpStatus.OK);
